@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+</head>
+<body>
+<div class="container">
+    <h1>Weather Information</h1>
+
+    <form action="/" method="get">
+        <input type="text" name="city" placeholder="Enter city" required>
+        <button type="submit">Get Weather</button>
+    </form>
+
+    <% if (weather) { %>
+        <h2><%= weather.name %>, <%= weather.sys.country %></h2>
+        <p>Temperature: <%= weather.main.temp %> °C</p>
+        <p>Feels Like: <%= weather.main.feels_like %> °C</p>
+        <p>Description: <%= weather.weather[0].description %></p>
+        <p>Humidity: <%= weather.main.humidity %> %</p>
+        <p>Pressure: <%= weather.main.pressure %> hPa</p>
+        <p>Wind Speed: <%= weather.wind.speed %> m/s</p>
+        <p>Coordinates: Latitude <%= lat %>, Longitude <%= lon %></p>
+
+        <div id="map" style="height: 400px; width: 100%;"></div>
+    <% } else { %>
+        <p>Weather data not available.</p>
+    <% } %>
+
+    <h2>Latest News</h2>
+    <% if (news && news.length > 0) { %>
+        <ul>
+            <% news.forEach(article => { %>
+                <li>
+                    <a href="<%= article.url %>" target="_blank"><%= article.title %></a>
+                    <p><%= article.description %></p>
+                </li>
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <p>No news available.</p>
+    <% } %>
+
+    <h2>Currency Exchange Rates</h2>
+    <% if (currency) { %>
+        <ul>
+            <li>USD to KZT: <%= currency.KZT %></li>
+            <li>USD to EUR: <%= currency.EUR %></li>
+        </ul>
+    <% } else { %>
+        <p>No currency data available.</p>
+    <% } %>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script>
+    <% if (lat && lon) { %>
+
+    var map = L.map('map').setView([<%= lat %>, <%= lon %>], 10);
+
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    L.marker([<%= lat %>, <%= lon %>]).addTo(map)
+        .bindPopup('<%= weather.name %>, <%= weather.sys.country %>')
+        .openPopup();
+    <% } %>
+</script>
+</body>
+</html>
